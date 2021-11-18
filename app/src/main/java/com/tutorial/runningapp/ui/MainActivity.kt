@@ -1,7 +1,8 @@
-package com.tutorial.runningapp
+package com.tutorial.runningapp.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.tutorial.runningapp.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
