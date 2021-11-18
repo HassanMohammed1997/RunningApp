@@ -1,4 +1,4 @@
-package com.tutorial.runningapp.data
+package com.tutorial.runningapp.data.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.*

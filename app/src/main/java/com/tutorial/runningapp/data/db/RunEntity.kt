@@ -1,4 +1,4 @@
-package com.tutorial.runningapp.data
+package com.tutorial.runningapp.data.db
 
 import android.graphics.Bitmap
 import androidx.room.Entity
