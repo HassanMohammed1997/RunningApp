@@ -1,11 +1,13 @@
 package com.tutorial.runningapp.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.tutorial.runningapp.R
+import com.tutorial.runningapp.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -16,6 +18,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         bottomNavigationView.setupWithNavController(navHostFragment.findNavController())
+        navigateToTrackingFragmentIfNeeded(intent)
 
         navHostFragment.findNavController().addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
@@ -23,6 +26,18 @@ class MainActivity : AppCompatActivity() {
                     true
                 else -> bottomNavigationView.isVisible = false
             }
+        }
+    }
+
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        navigateToTrackingFragmentIfNeeded(intent)
+    }
+
+    private fun navigateToTrackingFragmentIfNeeded(intent: Intent?) {
+        if (intent?.action == Constants.ACTION_SHOW_TRACKING_FRAGMENT) {
+            navHostFragment.findNavController().navigate(R.id.action_global_trackingFragment)
         }
     }
 }
