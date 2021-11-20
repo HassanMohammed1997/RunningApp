@@ -21,4 +21,5 @@
     <string name="title_start">Start</string>
     <string name="title_finish_run">Finish Run</string>
     <string name="title_let_s_go_username">Let\'s go, USERNAME!</string>
+    <string name="msg_location_permission_rotional">You need to accept location permissions to use the app.</string>
 </resources>
