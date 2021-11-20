@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RunningApp</string>
+    <string name="app_name">Running App</string>
     <string-array name="filter_options">
         <item>Date</item>
         <item>Running Time</item>
@@ -9,4 +9,16 @@
     </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_your_runs">Your Runs</string>
+    <string name="title_statistics">Statistics</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_continue">Continue</string>
+    <string name="title_your_weight">Your Weight</string>
+    <string name="symbol_kg">kg</string>
+    <string name="title_your_name">Your Name</string>
+    <string name="title_welcome_nplease_enter_your_name_and_weight">Welcome!\nPlease enter your name and weight.</string>
+    <string name="time_format_00_00_00_00">00:00:00:00</string>
+    <string name="title_start">Start</string>
+    <string name="title_finish_run">Finish Run</string>
+    <string name="title_let_s_go_username">Let\'s go, USERNAME!</string>
 </resources>
