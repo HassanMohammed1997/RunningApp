@@ -36,17 +36,23 @@ class LocationTrackingService : LifecycleService() {
     lateinit var fuesdLocationProviderClient: FusedLocationProviderClient
 
     companion object {
-        val isTracking = MutableLiveData(false)
-        val pathPoints = MutableLiveData<Polyines>(mutableListOf())
+        val isTracking = MutableLiveData<Boolean>()
+        val pathPoints = MutableLiveData<Polyines>()
     }
 
     override fun onCreate() {
         super.onCreate()
         fuesdLocationProviderClient = FusedLocationProviderClient(this)
+        postInitalValues()
 
         isTracking.observe(this) {
             updateLocationTracking(it)
         }
+    }
+
+    private fun postInitalValues(){
+        isTracking.postValue(false)
+        pathPoints.postValue(mutableListOf())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -57,12 +63,13 @@ class LocationTrackingService : LifecycleService() {
                         startForegroundService()
                         isFirstRun = false
                     } else {
+                        startForegroundService()
                         Timber.d("Resuming Service")
                     }
                 }
 
                 Constants.ACTION_PAUSE_SERVICE -> {
-                    Timber.d("Pause service")
+                    pauseService()
                 }
 
                 Constants.ACTION_STOP_SERVICE -> {
@@ -71,6 +78,10 @@ class LocationTrackingService : LifecycleService() {
             }
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun pauseService() {
+        isTracking.postValue(false)
     }
 
     private fun addEmptyPolyLine() = pathPoints.value?.apply {
