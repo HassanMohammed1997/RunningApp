@@ -3,46 +3,60 @@ package com.tutorial.runningapp.service
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_UPDATE_CURRENT
-import android.content.Context
 import android.content.Intent
 import android.location.Location
-import android.location.LocationManager
 import android.os.Build
 import android.os.Looper
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
-import com.tutorial.runningapp.R
-import com.tutorial.runningapp.ui.MainActivity
+import com.tutorial.runningapp.stopwatch.StopwatchListOrchestrator
 import com.tutorial.runningapp.utils.Constants
 import com.tutorial.runningapp.utils.LocationUtils
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.delayFlow
+import kotlinx.coroutines.flow.onStart
 import timber.log.Timber
+import javax.inject.Inject
 
 typealias Polyline = MutableList<LatLng>
 typealias Polyines = MutableList<Polyline>
 
+@AndroidEntryPoint
 class LocationTrackingService : LifecycleService() {
     var isFirstRun = true
+    var isTimerEnabled = false
 
-    lateinit var fuesdLocationProviderClient: FusedLocationProviderClient
+    @Inject
+    lateinit var stopwatchListOrchestrator: StopwatchListOrchestrator
+
+    @Inject
+    lateinit var serviceNotification: NotificationCompat.Builder
+
+    @Inject
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
 
     companion object {
+        val ticker = MutableLiveData<String>()
         val isTracking = MutableLiveData<Boolean>()
         val pathPoints = MutableLiveData<Polyines>()
+        val tickerInSeconds = MutableLiveData<String>()
     }
 
     override fun onCreate() {
         super.onCreate()
-        fuesdLocationProviderClient = FusedLocationProviderClient(this)
         postInitalValues()
 
         isTracking.observe(this) {
@@ -50,9 +64,30 @@ class LocationTrackingService : LifecycleService() {
         }
     }
 
-    private fun postInitalValues(){
+    private fun postInitalValues() {
         isTracking.postValue(false)
         pathPoints.postValue(mutableListOf())
+        ticker.postValue("")
+        tickerInSeconds.postValue("")
+    }
+
+    private fun startTimer() {
+        addEmptyPolyLine()
+        isTracking.postValue(true)
+        isTimerEnabled = true
+        stopwatchListOrchestrator.start()
+        lifecycleScope.launchWhenStarted {
+            stopwatchListOrchestrator.ticker.onStart { delay(1000) }
+                .collectLatest { tickerInSeconds.postValue(it)}
+        }
+
+        lifecycleScope.launchWhenStarted {
+            stopwatchListOrchestrator.ticker.collect {
+                ticker.postValue(it)
+            }
+        }
+
+
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -73,7 +108,8 @@ class LocationTrackingService : LifecycleService() {
                 }
 
                 Constants.ACTION_STOP_SERVICE -> {
-                    Timber.d("Stop service")
+                    pauseService()
+                    stopwatchListOrchestrator.stop()
                 }
             }
         }
@@ -82,6 +118,8 @@ class LocationTrackingService : LifecycleService() {
 
     private fun pauseService() {
         isTracking.postValue(false)
+        isTimerEnabled = false
+        stopwatchListOrchestrator.pause()
     }
 
     private fun addEmptyPolyLine() = pathPoints.value?.apply {
@@ -89,7 +127,7 @@ class LocationTrackingService : LifecycleService() {
         pathPoints.postValue(this)
     } ?: pathPoints.postValue(mutableListOf(mutableListOf()))
 
-    private fun addPathPoint(location: Location?) {
+    private fun addNewPathPoint(location: Location?) {
         location?.let {
             val point = LatLng(it.latitude, it.longitude)
             pathPoints.value?.apply {
@@ -99,13 +137,13 @@ class LocationTrackingService : LifecycleService() {
         }
     }
 
-    val locationCallback = object : LocationCallback() {
+    private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
             super.onLocationResult(result)
             if (isTracking.value!!) {
                 result.locations.let { locations ->
                     for (location in locations) {
-                        addPathPoint(location)
+                        addNewPathPoint(location)
                         Timber.d("Location: $location")
                     }
                 }
@@ -123,14 +161,14 @@ class LocationTrackingService : LifecycleService() {
                     priority = PRIORITY_HIGH_ACCURACY
                 }
 
-                fuesdLocationProviderClient.requestLocationUpdates(
+                fusedLocationProviderClient.requestLocationUpdates(
                     request,
                     locationCallback,
                     Looper.getMainLooper()
                 )
             }
         } else {
-            fuesdLocationProviderClient.removeLocationUpdates(locationCallback)
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback)
         }
     }
 
@@ -146,32 +184,19 @@ class LocationTrackingService : LifecycleService() {
     }
 
     private fun startForegroundService() {
-        addEmptyPolyLine()
-        isTracking.postValue(true)
+        startTimer()
+        startForegroundNotification()
+    }
+
+    private fun startForegroundNotification() {
         val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel(notificationManager)
         }
 
-        val notificationBuilder =
-            NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
-                .setAutoCancel(false) //can't be cancelled by user
-                .setOngoing(true) //can't be swiped
-                .setSmallIcon(R.drawable.ic_baseline_directions_run_24)
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText("00:00:00")
-                .setContentIntent(createMainActivityPendingIntent())
 
-        startForeground(Constants.NOTIFICATION_ID, notificationBuilder.build())
-
+        startForeground(Constants.NOTIFICATION_ID, serviceNotification.build())
     }
 
-    private fun createMainActivityPendingIntent() = PendingIntent.getActivity(
-        this,
-        0,
-        Intent(this, MainActivity::class.java).also {
-            it.action = Constants.ACTION_SHOW_TRACKING_FRAGMENT
-        }, FLAG_UPDATE_CURRENT
-    )
 }

@@ -2,6 +2,7 @@ package com.tutorial.runningapp.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -16,6 +17,7 @@ import com.tutorial.runningapp.ui.viewmodels.MainViewModel
 import com.tutorial.runningapp.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_tracking.*
+import timber.log.Timber
 
 @AndroidEntryPoint
 class TrackingFragment : Fragment(R.layout.fragment_tracking) {
@@ -37,6 +39,14 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
 
         btnToggleRun.setOnClickListener {
             toggleRun()
+        }
+
+        LocationTrackingService.ticker.observe(viewLifecycleOwner) {
+            tvTimer.text = it
+        }
+
+        btnFinishRun.setOnClickListener {
+            sendCommandToLocationService(Constants.ACTION_STOP_SERVICE)
         }
     }
 
@@ -73,6 +83,10 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
             pathPoints = it
             addLatestPolyline()
             moveCameraToLatLng()
+        }
+
+        LocationTrackingService.ticker.observe(viewLifecycleOwner){
+            Timber.d("Ticker: $it")
         }
     }
 

@@ -5,6 +5,8 @@
       <map>
         <entry key="app/src/main/res/drawable/ic_graph.xml" value="0.284375" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2682291666666667" />
+        <entry key="app/src/main/res/layout/activity_stop_watch.xml" value="0.2682291666666667" />
+        <entry key="app/src/main/res/layout/content_stop_watch.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/fragment_maps.xml" value="0.19882246376811594" />
         <entry key="app/src/main/res/layout/fragment_run.xml" value="0.19882246376811594" />
         <entry key="app/src/main/res/layout/fragment_setup.xml" value="0.2682291666666667" />
