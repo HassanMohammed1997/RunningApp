@@ -84,10 +84,6 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
             addLatestPolyline()
             moveCameraToLatLng()
         }
-
-        LocationTrackingService.ticker.observe(viewLifecycleOwner){
-            Timber.d("Ticker: $it")
-        }
     }
 
     private fun toggleRun() {
