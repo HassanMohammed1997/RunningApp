@@ -40,6 +40,7 @@ typealias Polyines = MutableList<Polyline>
 class LocationTrackingService : LifecycleService() {
     var isFirstRun = true
     var isTimerEnabled = false
+    var isServiceKilled = false
 
     @Inject
     lateinit var stopwatchListOrchestrator: StopwatchListOrchestrator
@@ -53,6 +54,7 @@ class LocationTrackingService : LifecycleService() {
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private val tickerInSeconds = MutableLiveData<String>()
+
     companion object {
         val ticker = MutableLiveData<String>()
         val isTracking = MutableLiveData<Boolean>()
@@ -83,18 +85,31 @@ class LocationTrackingService : LifecycleService() {
         isTracking.postValue(true)
         isTimerEnabled = true
         stopwatchListOrchestrator.start()
-        lifecycleScope.launchWhenStarted {
-            // for update a notification every 1 sec
-            stopwatchListOrchestrator.ticker.onStart { delay(1000) }
-                .collectLatest { tickerInSeconds.postValue(it) }
-        }
-
-        lifecycleScope.launchWhenStarted {
-            stopwatchListOrchestrator.ticker.collect {
-                ticker.postValue(it)
+        if (!isServiceKilled)
+            lifecycleScope.launchWhenStarted {
+                // for update a notification every 1 sec
+                stopwatchListOrchestrator.ticker.onStart { delay(1000) }
+                    .collectLatest { tickerInSeconds.postValue(it) }
             }
-        }
 
+        if (!isServiceKilled)
+            lifecycleScope.launchWhenStarted {
+                stopwatchListOrchestrator.ticker.collect {
+                    ticker.postValue(it)
+                }
+            }
+
+
+    }
+
+    private fun killService() {
+        isFirstRun = true
+        isServiceKilled = true
+        stopwatchListOrchestrator.stop()
+        postInitalValues()
+        pauseService()
+        stopForeground(true)
+        stopSelf()
 
     }
 
@@ -116,8 +131,7 @@ class LocationTrackingService : LifecycleService() {
                 }
 
                 Constants.ACTION_STOP_SERVICE -> {
-                    pauseService()
-                    stopwatchListOrchestrator.stop()
+                    killService()
                 }
             }
         }
@@ -195,8 +209,10 @@ class LocationTrackingService : LifecycleService() {
         startTimer()
         startForegroundNotification()
         tickerInSeconds.observe(this) {
-            val notification = currentServiceNotificationBuilder.setContentText(it)
-            notificationManager.notify(Constants.NOTIFICATION_ID, notification.build())
+            if (!isServiceKilled) {
+                val notification = currentServiceNotificationBuilder.setContentText(it)
+                notificationManager.notify(Constants.NOTIFICATION_ID, notification.build())
+            }
         }
     }
 
@@ -206,8 +222,6 @@ class LocationTrackingService : LifecycleService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel(notificationManager)
         }
-
-
         startForeground(Constants.NOTIFICATION_ID, baseServiceNotificationBuilder.build())
     }
 
@@ -225,16 +239,18 @@ class LocationTrackingService : LifecycleService() {
             isAccessible = true
             set(currentServiceNotificationBuilder, ArrayList<NotificationCompat.Action>())
         }
-        currentServiceNotificationBuilder =
-            baseServiceNotificationBuilder.addAction(
-                R.drawable.baseline_pause_black_24dp,
-                notificationActionStringRes,
-                pendingIntent
+        if (!isServiceKilled) {
+            currentServiceNotificationBuilder =
+                baseServiceNotificationBuilder.addAction(
+                    R.drawable.baseline_pause_black_24dp,
+                    notificationActionStringRes,
+                    pendingIntent
+                )
+            notificationManager.notify(
+                Constants.NOTIFICATION_ID,
+                currentServiceNotificationBuilder.build()
             )
-        notificationManager.notify(
-            Constants.NOTIFICATION_ID,
-            currentServiceNotificationBuilder.build()
-        )
+        }
     }
 
     private fun getNotificationActionText(isTracking: Boolean) =

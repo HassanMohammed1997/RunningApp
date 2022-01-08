@@ -2,22 +2,26 @@ package com.tutorial.runningapp.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tutorial.runningapp.R
 import com.tutorial.runningapp.service.LocationTrackingService
 import com.tutorial.runningapp.service.Polyline
 import com.tutorial.runningapp.ui.viewmodels.MainViewModel
 import com.tutorial.runningapp.utils.Constants
+import com.tutorial.runningapp.utils.invalidateOptionMenu
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_tracking.*
-import timber.log.Timber
 
 @AndroidEntryPoint
 class TrackingFragment : Fragment(R.layout.fragment_tracking) {
@@ -25,6 +29,11 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
     private var map: GoogleMap? = null
     private var isTracking = false
     private var pathPoints = mutableListOf<Polyline>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,10 +53,62 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
         LocationTrackingService.ticker.observe(viewLifecycleOwner) {
             tvTimer.text = it
         }
-
+/*
         btnFinishRun.setOnClickListener {
             sendCommandToLocationService(Constants.ACTION_STOP_SERVICE)
+        }*/
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView?.onResume()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mapView?.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mapView?.onStop()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView?.onPause()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView?.onLowMemory()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView?.onDestroy()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        mapView?.onSaveInstanceState(outState)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_tracking, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.action_stop_running).isVisible = isTracking
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_stop_running) {
+            openCancelRunDialog()
+            return true
         }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun addLatestPolyline() {
@@ -91,6 +152,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
             sendCommandToLocationService(Constants.ACTION_PAUSE_SERVICE)
         else
             sendCommandToLocationService(Constants.ACTION_START_OR_RESUME_SERVICE)
+        invalidateOptionMenu()
     }
 
     private fun updateTracking(isTracking: Boolean) {
@@ -103,7 +165,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
             btnFinishRun.isVisible = false
         }
 
-
+        invalidateOptionMenu()
     }
 
     private fun addAllPolylines() {
@@ -124,39 +186,22 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
                 requireContext().startService(it)
             }
 
-    override fun onResume() {
-        super.onResume()
-        mapView?.onResume()
+    private fun openCancelRunDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setIcon(R.drawable.baseline_close_black_24dp)
+            .setTitle(R.string.title_cancel_run)
+            .setMessage(R.string.msg_cancel_run)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                stopRun()
+            }.setNegativeButton(android.R.string.cancel) { dialog, _ ->
+                dialog.cancel()
+            }.create().show()
     }
 
-    override fun onStart() {
-        super.onStart()
-        mapView?.onStart()
+    private fun stopRun() {
+        sendCommandToLocationService(Constants.ACTION_STOP_SERVICE)
+        findNavController().navigate(R.id.action_trackingFragment_to_runFragment)
     }
 
-    override fun onStop() {
-        super.onStop()
-        mapView?.onStop()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mapView?.onPause()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        mapView?.onLowMemory()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mapView?.onDestroy()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        mapView?.onSaveInstanceState(outState)
-    }
 
 }

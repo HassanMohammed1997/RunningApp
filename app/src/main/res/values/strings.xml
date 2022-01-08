@@ -34,4 +34,7 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="pause">Pause</string>
     <string name="resume">Resume</string>
+    <string name="close">Close</string>
+    <string name="title_cancel_run">Cancel the run</string>
+    <string name="msg_cancel_run">Are you sure to cancel the current run and delete all this data?</string>
 </resources>
