@@ -187,7 +187,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
             }
 
     private fun openCancelRunDialog() {
-        MaterialAlertDialogBuilder(requireContext())
+        MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme)
             .setIcon(R.drawable.baseline_close_black_24dp)
             .setTitle(R.string.title_cancel_run)
             .setMessage(R.string.msg_cancel_run)
