@@ -11,11 +11,8 @@ class StopwatchListOrchestrator @Inject constructor(
 ) {
 
     private var job: Job? = null
-    private val _ticker = MutableStateFlow("")
-    val ticker: StateFlow<String> = _ticker
-
-    private val _tickerInSeconds = MutableStateFlow("")
-    val tickerInSeconds: StateFlow<String> = _tickerInSeconds
+    private val _tickerInMilli = MutableStateFlow(0L)
+    val tickerInMilli: StateFlow<Long> = _tickerInMilli
 
     fun start() {
         if (job == null) startJob()
@@ -34,7 +31,7 @@ class StopwatchListOrchestrator @Inject constructor(
     }
 
     private fun clearValue() {
-        _ticker.value = TimestampMillisecondsFormatter.DEFAULT_FORMAT
+        _tickerInMilli.value = 0L
     }
 
     private fun stopJob() {
@@ -45,7 +42,7 @@ class StopwatchListOrchestrator @Inject constructor(
     private fun startJob() {
         scope.launch {
             while (isActive) {
-                _ticker.value = stopWatchStateHolder.timeRepresented
+                _tickerInMilli.value = stopWatchStateHolder.timeInMilli
                 delay(20)
             }
         }

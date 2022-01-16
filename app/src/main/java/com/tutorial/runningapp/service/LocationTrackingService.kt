@@ -23,6 +23,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
 import com.tutorial.runningapp.R
 import com.tutorial.runningapp.stopwatch.StopwatchListOrchestrator
+import com.tutorial.runningapp.stopwatch.TimestampMillisecondsFormatter
 import com.tutorial.runningapp.utils.Constants
 import com.tutorial.runningapp.utils.LocationUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -53,10 +54,10 @@ class LocationTrackingService : LifecycleService() {
     @Inject
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
-    private val tickerInSeconds = MutableLiveData<String>()
+    private val tickerInSeconds = MutableLiveData<Long>()
 
     companion object {
-        val ticker = MutableLiveData<String>()
+        val tickerInMs = MutableLiveData<Long>()
         val isTracking = MutableLiveData<Boolean>()
         val pathPoints = MutableLiveData<Polyines>()
 
@@ -76,8 +77,8 @@ class LocationTrackingService : LifecycleService() {
     private fun postInitalValues() {
         isTracking.postValue(false)
         pathPoints.postValue(mutableListOf())
-        ticker.postValue("")
-        tickerInSeconds.postValue("")
+        tickerInMs.postValue(0L)
+        tickerInSeconds.postValue(0L)
     }
 
     private fun startTimer() {
@@ -88,14 +89,14 @@ class LocationTrackingService : LifecycleService() {
         if (!isServiceKilled)
             lifecycleScope.launchWhenStarted {
                 // for update a notification every 1 sec
-                stopwatchListOrchestrator.ticker.onStart { delay(1000) }
+                stopwatchListOrchestrator.tickerInMilli.onStart { delay(1000) }
                     .collectLatest { tickerInSeconds.postValue(it) }
             }
 
         if (!isServiceKilled)
             lifecycleScope.launchWhenStarted {
-                stopwatchListOrchestrator.ticker.collect {
-                    ticker.postValue(it)
+                stopwatchListOrchestrator.tickerInMilli.collect {
+                    tickerInMs.postValue(it)
                 }
             }
 
@@ -210,7 +211,9 @@ class LocationTrackingService : LifecycleService() {
         startForegroundNotification()
         tickerInSeconds.observe(this) {
             if (!isServiceKilled) {
-                val notification = currentServiceNotificationBuilder.setContentText(it)
+                val notification = currentServiceNotificationBuilder.setContentText(
+                    TimestampMillisecondsFormatter.format(it)
+                )
                 notificationManager.notify(Constants.NOTIFICATION_ID, notification.build())
             }
         }

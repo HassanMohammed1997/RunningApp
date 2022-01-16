@@ -3,7 +3,6 @@ package com.tutorial.runningapp.ui
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.ui.AppBarConfiguration
 import com.tutorial.runningapp.databinding.ActivityStopWatchBinding
 import com.tutorial.runningapp.stopwatch.StopwatchListOrchestrator
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,7 +26,7 @@ class StopWatchActivity : AppCompatActivity() {
 
 
         lifecycleScope.launchWhenCreated {
-            stopWatchListOrchestrator.ticker.collect {
+            stopWatchListOrchestrator.tickerInMilli.collect {
                 Timber.d("Stop Watch ticker: $it")
             }
         }

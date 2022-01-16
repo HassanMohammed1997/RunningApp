@@ -29,6 +29,14 @@ class StopWatchStateHolder @Inject constructor(
                 is StopWatchState.Running -> elapsedTimeCalculator.calculate(currentState)
             }
 
-            return timestampMillisecondsFormatter.format(elapsedTime)
+            return TimestampMillisecondsFormatter.format(elapsedTime)
+        }
+
+    val timeInMilli: Long
+        get() {
+            return when (val currentState = currentState) {
+                is StopWatchState.Paused -> currentState.elapsedTime
+                is StopWatchState.Running -> elapsedTimeCalculator.calculate(currentState)
+            }
         }
 }

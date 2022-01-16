@@ -17,6 +17,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tutorial.runningapp.R
 import com.tutorial.runningapp.service.LocationTrackingService
 import com.tutorial.runningapp.service.Polyline
+import com.tutorial.runningapp.stopwatch.TimestampMillisecondsFormatter
 import com.tutorial.runningapp.ui.viewmodels.MainViewModel
 import com.tutorial.runningapp.utils.Constants
 import com.tutorial.runningapp.utils.invalidateOptionMenu
@@ -29,6 +30,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
     private var map: GoogleMap? = null
     private var isTracking = false
     private var pathPoints = mutableListOf<Polyline>()
+    private var currentElapsedTime = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,8 +52,9 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
             toggleRun()
         }
 
-        LocationTrackingService.ticker.observe(viewLifecycleOwner) {
-            tvTimer.text = it
+        LocationTrackingService.tickerInMs.observe(viewLifecycleOwner) {
+            currentElapsedTime = it
+            tvTimer.text = TimestampMillisecondsFormatter.format(currentElapsedTime)
         }
 /*
         btnFinishRun.setOnClickListener {
@@ -100,7 +103,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.action_stop_running).isVisible = isTracking
+        menu.findItem(R.id.action_stop_running).isVisible = (currentElapsedTime > 0 && isTracking)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
