@@ -1,4 +1,4 @@
-package com.tutorial.runningapp.adapter
+package com.tutorial.runningapp.adapters
 
 import androidx.recyclerview.widget.DiffUtil
 import com.tutorial.runningapp.data.db.RunEntity

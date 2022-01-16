@@ -2,12 +2,14 @@ package com.tutorial.runningapp.ui.fragments
 
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.tutorial.runningapp.R
-import com.tutorial.runningapp.adapter.RunningAdapter
+import com.tutorial.runningapp.adapters.RunningAdapter
+import com.tutorial.runningapp.enums.SortTypes
 import com.tutorial.runningapp.ui.viewmodels.MainViewModel
 import com.tutorial.runningapp.utils.LocationUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,13 +27,51 @@ class RunFragment : Fragment(R.layout.fragment_run), EasyPermissions.PermissionC
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fab.setOnClickListener { findNavController().navigate(R.id.action_runFragment_to_trackingFragment) }
+
         requestLocationPermissions()
         setupRecyclerView()
+        subscribeObservers()
+        setupSortSpinner()
+        setListenerForViews()
+    }
 
-        mainViewModel.runSortedByDate.observe(viewLifecycleOwner){
+    private fun setListenerForViews() {
+        fab.setOnClickListener { findNavController().navigate(R.id.action_runFragment_to_trackingFragment) }
+
+        spFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                mainViewModel.sort(SortTypes.getSortType(position))
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+
+        }
+    }
+
+    private fun subscribeObservers() {
+        mainViewModel.runSortedByDate.observe(viewLifecycleOwner) {
             runAdapter.submitList(it)
         }
+
+        mainViewModel.runs.observe(viewLifecycleOwner) {
+            runAdapter.submitList(it)
+        }
+    }
+
+    private fun setupSortSpinner() {
+        when (mainViewModel.sortType) {
+            SortTypes.DATE -> spFilter.setSelection(0)
+            SortTypes.RUNNING_TIME -> spFilter.setSelection(1)
+            SortTypes.AVG_SPEED -> spFilter.setSelection(2)
+            SortTypes.DISTANCE -> spFilter.setSelection(3)
+            SortTypes.CALORIES_BURNED -> spFilter.setSelection(4)
+        }
+
     }
 
     private fun setupRecyclerView() {

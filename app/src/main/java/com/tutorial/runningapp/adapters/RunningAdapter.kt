@@ -1,4 +1,4 @@
-package com.tutorial.runningapp.adapter
+package com.tutorial.runningapp.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
