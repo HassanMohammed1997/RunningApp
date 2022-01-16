@@ -8,9 +8,10 @@
         <entry key="app/src/main/res/layout/activity_stop_watch.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/content_stop_watch.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/fragment_maps.xml" value="0.19882246376811594" />
-        <entry key="app/src/main/res/layout/fragment_run.xml" value="0.19882246376811594" />
+        <entry key="app/src/main/res/layout/fragment_run.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_setup.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/fragment_tracking.xml" value="0.2682291666666667" />
+        <entry key="app/src/main/res/layout/list_item_run.xml" value="0.18333333333333332" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/menu/menu_tracking.xml" value="0.2682291666666667" />
       </map>

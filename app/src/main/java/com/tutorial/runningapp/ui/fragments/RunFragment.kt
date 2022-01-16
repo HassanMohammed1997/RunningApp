@@ -5,7 +5,9 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.tutorial.runningapp.R
+import com.tutorial.runningapp.adapter.RunningAdapter
 import com.tutorial.runningapp.ui.viewmodels.MainViewModel
 import com.tutorial.runningapp.utils.LocationUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,12 +20,30 @@ private const val RC_LOCATION_PERMISSION = 1001
 @AndroidEntryPoint
 class RunFragment : Fragment(R.layout.fragment_run), EasyPermissions.PermissionCallbacks {
     private val mainViewModel: MainViewModel by viewModels()
+    private val runAdapter by lazy { RunningAdapter() }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         fab.setOnClickListener { findNavController().navigate(R.id.action_runFragment_to_trackingFragment) }
         requestLocationPermissions()
+        setupRecyclerView()
+
+        mainViewModel.runSortedByDate.observe(viewLifecycleOwner){
+            runAdapter.submitList(it)
+        }
+    }
+
+    private fun setupRecyclerView() {
+        rvRuns.apply {
+            adapter = runAdapter
+            addItemDecoration(
+                DividerItemDecoration(
+                    requireContext(),
+                    DividerItemDecoration.VERTICAL
+                )
+            )
+        }
     }
 
     private fun requestLocationPermissions() {
