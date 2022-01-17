@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.tutorial.runningapp.stopwatch.TimestampMillisecondsFormatter
+import com.tutorial.runningapp.utils.extensions.toKm
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -32,7 +33,7 @@ object BindingAdapterUtils {
     @BindingAdapter("app:setDistanceInKm")
     @JvmStatic
     fun TextView.bindDistanceInKm(distanceInMeter: Int){
-        text = "${distanceInMeter / 1000}km"
+        text = "${distanceInMeter.toKm()}km"
     }
 
     @BindingAdapter("app:setCaloriesBurned")

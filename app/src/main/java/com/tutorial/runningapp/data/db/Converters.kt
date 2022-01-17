@@ -3,7 +3,7 @@ package com.tutorial.runningapp.data.db
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.room.TypeConverter
-import com.tutorial.runningapp.utils.toByteArray
+import com.tutorial.runningapp.utils.extensions.toByteArray
 
 class Converters {
 

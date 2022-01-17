@@ -8,6 +8,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
 import com.tutorial.runningapp.data.db.RunEntity
 import com.tutorial.runningapp.stopwatch.TimestampMillisecondsFormatter
+import com.tutorial.runningapp.utils.extensions.toKm
 import kotlinx.android.synthetic.main.custom_marker_view.view.*
 import java.text.SimpleDateFormat
 import java.util.*

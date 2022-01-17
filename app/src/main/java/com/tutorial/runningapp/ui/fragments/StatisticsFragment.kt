@@ -13,7 +13,7 @@ import com.tutorial.runningapp.R
 import com.tutorial.runningapp.stopwatch.TimestampMillisecondsFormatter
 import com.tutorial.runningapp.ui.viewmodels.StatisticsViewModel
 import com.tutorial.runningapp.utils.CustomMarkerView
-import com.tutorial.runningapp.utils.toKm
+import com.tutorial.runningapp.utils.extensions.toKm
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_statistics.*
 import kotlin.math.round
@@ -25,6 +25,7 @@ class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupBarChart()
         subscribeToObservers()
     }
 

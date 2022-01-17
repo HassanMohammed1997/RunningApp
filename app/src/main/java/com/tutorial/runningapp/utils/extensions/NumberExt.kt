@@ -1,4 +1,4 @@
-package com.tutorial.runningapp.utils
+package com.tutorial.runningapp.utils.extensions
 
 fun Int.toKm() = this / 1000f
 

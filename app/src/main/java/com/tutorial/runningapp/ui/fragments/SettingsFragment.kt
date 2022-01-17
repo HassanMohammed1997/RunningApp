@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.tutorial.runningapp.R
 import com.tutorial.runningapp.utils.Constants
-import com.tutorial.runningapp.utils.extractText
+import com.tutorial.runningapp.utils.extensions.extractText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_settings.*

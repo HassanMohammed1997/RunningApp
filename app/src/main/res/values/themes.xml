@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Original AppCompat attributes. -->
@@ -6,6 +6,7 @@
         <item name="colorSecondary">@color/md_blue_500</item>
         <item name="android:colorBackground">@color/md_blue_700</item>
         <item name="colorError">@color/errorColor</item>
+        <item name="textInputStyle">@style/TextInputLayoutStyle</item>
 
         <!-- New MaterialComponents attributes. -->
         <item name="colorPrimaryVariant">@android:color/white</item>
@@ -18,6 +19,7 @@
         <item name="colorOnError">@android:color/black</item>
         <item name="colorOnSurface">@android:color/white</item>
         <item name="scrimBackground">@color/mtrl_scrim_color</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="textAppearanceHeadline1">@style/TextAppearance.MaterialComponents.Headline1
         </item>
         <item name="textAppearanceHeadline2">@style/TextAppearance.MaterialComponents.Headline2
@@ -60,11 +62,17 @@
     <style name="PositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">@color/colorAccent</item>
     </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox"/>
+
 
 </resources>

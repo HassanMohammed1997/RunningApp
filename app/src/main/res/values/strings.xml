@@ -50,4 +50,6 @@
     <string name="avg_speed">AVG SPEED</string>
     <string name="distance">DISTANCE</string>
     <string name="calories_burned">CALORIES BURNED</string>
+    <string name="sort_by">Sort by:</string>
+    <string name="no_runs_found">No runs found</string>
 </resources>

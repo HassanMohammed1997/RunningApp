@@ -22,6 +22,9 @@ import com.tutorial.runningapp.service.Polyline
 import com.tutorial.runningapp.stopwatch.TimestampMillisecondsFormatter
 import com.tutorial.runningapp.ui.viewmodels.MainViewModel
 import com.tutorial.runningapp.utils.*
+import com.tutorial.runningapp.utils.extensions.invalidateOptionMenu
+import com.tutorial.runningapp.utils.extensions.toHour
+import com.tutorial.runningapp.utils.extensions.toKm
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_tracking.*
 import javax.inject.Inject
@@ -250,7 +253,6 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
         Intent(requireContext(), LocationTrackingService::class.java)
             .also {
                 it.action = action
-
                 requireContext().startService(it)
             }
 

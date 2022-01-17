@@ -9,8 +9,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.tutorial.runningapp.R
 import com.tutorial.runningapp.adapters.RunningAdapter
+import com.tutorial.runningapp.data.db.RunEntity
 import com.tutorial.runningapp.enums.SortTypes
 import com.tutorial.runningapp.ui.viewmodels.MainViewModel
+import com.tutorial.runningapp.utils.Constants
 import com.tutorial.runningapp.utils.LocationUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_run.*
@@ -55,11 +57,19 @@ class RunFragment : Fragment(R.layout.fragment_run), EasyPermissions.PermissionC
 
     private fun subscribeObservers() {
         mainViewModel.runSortedByDate.observe(viewLifecycleOwner) {
-            runAdapter.submitList(it)
+            submitRunEntityList(it)
         }
 
         mainViewModel.runs.observe(viewLifecycleOwner) {
-            runAdapter.submitList(it)
+            submitRunEntityList(it)
+        }
+    }
+
+    private fun submitRunEntityList(runs: List<RunEntity>) {
+        if (runs.isEmpty()) showEmpty()
+        else {
+            showRecycler()
+            runAdapter.submitList(runs)
         }
     }
 
@@ -109,6 +119,14 @@ class RunFragment : Fragment(R.layout.fragment_run), EasyPermissions.PermissionC
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    private fun showRecycler() {
+        viewSwitcher.displayedChild = Constants.VIEW_CONTENT
+    }
+
+    private fun showEmpty() {
+        viewSwitcher.displayedChild = Constants.VIEW_EMPTY
     }
 
 }

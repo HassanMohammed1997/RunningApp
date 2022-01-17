@@ -1,4 +1,4 @@
-package com.tutorial.runningapp.utils
+package com.tutorial.runningapp.utils.extensions
 
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat

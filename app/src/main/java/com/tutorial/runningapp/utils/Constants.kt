@@ -24,4 +24,8 @@ object Constants {
     const val KEY_FIRST_TIME_TOGGLE = "KEY_FIRST_TIME_TOGGLE"
     const val KEY_NAME = "KEY_NAME"
     const val KEY_WEIGHT = "KEY_WEIGHT"
+
+
+    const val VIEW_CONTENT = 0
+    const val VIEW_EMPTY = 1
 }
