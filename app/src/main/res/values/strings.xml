@@ -44,4 +44,10 @@
     <string name="your_name">Your Name</string>
     <string name="msg_data_saved_successfully">Saved changes</string>
     <string name="msg_enter_all_fields">Please enter all fields</string>
+    <string name="avg_speed_over_time">Avg speed over time</string>
+    <string name="date">DATE</string>
+    <string name="duration">DURATION</string>
+    <string name="avg_speed">AVG SPEED</string>
+    <string name="distance">DISTANCE</string>
+    <string name="calories_burned">CALORIES BURNED</string>
 </resources>

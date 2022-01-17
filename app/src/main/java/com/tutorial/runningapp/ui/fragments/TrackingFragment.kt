@@ -218,7 +218,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
 
     private fun updateTracking(isTracking: Boolean) {
         this.isTracking = isTracking
-        if (!isTracking) {
+        if (!isTracking && currentElapsedTime > 0L) {
             btnToggleRun.text = getString(R.string.title_start)
             btnFinishRun.isVisible = true
         } else {
