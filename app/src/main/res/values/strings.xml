@@ -39,4 +39,9 @@
     <string name="msg_cancel_run">Are you sure to cancel the current run and delete all this data?</string>
     <string name="msg_run_saved_successfully">Run saved successfully</string>
     <string name="lets_go">Let\'s go %s</string>
+    <string name="apply_changes">Apply Changes</string>
+    <string name="your_weight">Your Weight</string>
+    <string name="your_name">Your Name</string>
+    <string name="msg_data_saved_successfully">Saved changes</string>
+    <string name="msg_enter_all_fields">Please enter all fields</string>
 </resources>

@@ -9,4 +9,10 @@ import javax.inject.Inject
 class StatisticsViewModel @Inject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
+
+    val totalTimeInMs = repository.getTotalTimeInMs()
+    val totalAvgSpeed = repository.getTotalAverageSpeed()
+    val totalCaloriesBurned = repository.getTotalCaloriesBurned()
+    val totalDistance = repository.getTotalDistance()
+
 }
