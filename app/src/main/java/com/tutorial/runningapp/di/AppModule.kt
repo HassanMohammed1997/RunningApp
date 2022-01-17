@@ -1,6 +1,8 @@
 package com.tutorial.runningapp.di
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import androidx.room.Room
 import com.tutorial.runningapp.data.db.AppDatabase
 import com.tutorial.runningapp.stopwatch.StopWatchStateHolder
@@ -41,4 +43,22 @@ object AppModule {
             scope = CoroutineScope(SupervisorJob() + dispatcher)
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideSharedPreference(@ApplicationContext app: Context): SharedPreferences =
+        app.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE)
+
+    @Provides
+    @Singleton
+    fun provideName(pref: SharedPreferences): String = pref.getString(Constants.KEY_NAME, "") ?: ""
+
+    @Provides
+    @Singleton
+    fun provideWeight(pref: SharedPreferences): Float = pref.getFloat(Constants.KEY_WEIGHT, 80f)
+
+    @Provides
+    @Singleton
+    fun provideFirstTimeToggle(pref: SharedPreferences): Boolean =
+        pref.getBoolean(Constants.KEY_FIRST_TIME_TOGGLE, true)
 }

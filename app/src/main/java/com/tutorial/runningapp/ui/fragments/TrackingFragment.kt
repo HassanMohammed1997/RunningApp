@@ -25,6 +25,7 @@ import com.tutorial.runningapp.ui.viewmodels.MainViewModel
 import com.tutorial.runningapp.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_tracking.*
+import javax.inject.Inject
 import kotlin.math.round
 
 @AndroidEntryPoint
@@ -34,7 +35,9 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
     private var isTracking = false
     private var pathPoints = mutableListOf<Polyline>()
     private var currentElapsedTime = 0L
-    private var weight = 60f
+
+    @set:Inject
+    var weight = 60f
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
