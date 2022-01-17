@@ -10,10 +10,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object BindingAdapterUtils {
-    @BindingAdapter("app:setDate", "app:dateFormat", requireAll = false)
+    @BindingAdapter("app:setDate")
     @JvmStatic
-    fun TextView.bindDate(date: Long, format: String = "dd.MM.yy"){
-        val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+    fun TextView.bindDate(date: Long){
+        val dateFormat = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
         text = dateFormat.format(date)
     }
 

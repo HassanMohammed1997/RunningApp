@@ -7,6 +7,7 @@ import com.tutorial.runningapp.data.db.RunEntity
 import com.tutorial.runningapp.enums.SortTypes
 import com.tutorial.runningapp.repositories.MainRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -66,7 +67,7 @@ class MainViewModel @Inject constructor(
         SortTypes.CALORIES_BURNED -> runsSortedByCaloriesBurned.value?.let { runs.value = it }
     }.also { this.sortType = sortType }
 
-    fun insertRun(run: RunEntity) = viewModelScope.launch { repository.insertRun(run) }
+    fun insertRun(run: RunEntity) = viewModelScope.launch(Dispatchers.IO) { repository.insertRun(run) }
 
 
 }
