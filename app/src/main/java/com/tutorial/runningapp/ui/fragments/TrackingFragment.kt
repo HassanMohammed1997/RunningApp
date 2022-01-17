@@ -14,7 +14,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.tutorial.runningapp.R
 import com.tutorial.runningapp.data.db.RunEntity
@@ -27,6 +26,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_tracking.*
 import javax.inject.Inject
 import kotlin.math.round
+
+const val CANCEL_TRACKING_DIALOG_TAG = "cancel_tracking_dialog_tag"
 
 @AndroidEntryPoint
 class TrackingFragment : Fragment(R.layout.fragment_tracking) {
@@ -48,6 +49,12 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mapView.onCreate(savedInstanceState)
+
+        if (savedInstanceState != null) {
+            val cancelTrackingDialog =
+                parentFragmentManager.findFragmentByTag(CANCEL_TRACKING_DIALOG_TAG) as CancelTrackingDialog?
+            cancelTrackingDialog?.setYesListener { stopRun() }
+        }
 
         mapView.getMapAsync { googleMap ->
             map = googleMap
@@ -221,7 +228,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
         if (!isTracking && currentElapsedTime > 0L) {
             btnToggleRun.text = getString(R.string.title_start)
             btnFinishRun.isVisible = true
-        } else {
+        } else if (isTracking) {
             btnToggleRun.text = getString(R.string.title_stop)
             btnFinishRun.isVisible = false
         }
@@ -248,15 +255,11 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
             }
 
     private fun openCancelRunDialog() {
-        MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme)
-            .setIcon(R.drawable.baseline_close_black_24dp)
-            .setTitle(R.string.title_cancel_run)
-            .setMessage(R.string.msg_cancel_run)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
+        CancelTrackingDialog().apply {
+            setYesListener {
                 stopRun()
-            }.setNegativeButton(android.R.string.cancel) { dialog, _ ->
-                dialog.cancel()
-            }.create().show()
+            }
+        }.show(parentFragmentManager, CANCEL_TRACKING_DIALOG_TAG)
     }
 
     private fun stopRun() {

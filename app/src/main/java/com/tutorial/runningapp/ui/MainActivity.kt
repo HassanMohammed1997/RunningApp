@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         bottomNavigationView.setupWithNavController(navHostFragment.findNavController())
+        bottomNavigationView.setOnItemReselectedListener {  }
         navigateToTrackingFragmentIfNeeded(intent)
 
         navHostFragment.findNavController().addOnDestinationChangedListener { _, destination, _ ->
